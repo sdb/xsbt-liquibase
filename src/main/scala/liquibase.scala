@@ -14,11 +14,14 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
   def changeLogFile: Path
   def url: String
   def driver: String
+  
+  def contexts: String = null
+  def defaultSchemaName: String = null
 
   lazy val liquibaseUpdate = liquibaseUpdateAction
   def liquibaseUpdateAction = task {
     new LiquibaseAction with Cleanup {
-      def action { liquibase update "" }
+      def action { liquibase update contexts }
     }.run
     None
   } describedAs  "Applies un-run changes to the database."
@@ -32,7 +35,7 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
       null,
       null,
       driver,
-      null,
+      defaultSchemaName,
       null)
 
     lazy val liquibase = new Liquibase(
