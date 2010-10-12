@@ -26,6 +26,14 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     None
   } describedAs  "Applies un-run changes to the database."
 
+  lazy val liquibaseDrop = liquibaseDropAction
+  def liquibaseDropAction = task { args => task {
+    new LiquibaseAction with Cleanup {
+      def action { liquibase dropAll (args.toList.toArray:_*) }
+    }.run
+    None }
+  } describedAs  "Drops database objects owned by the current user."
+
 
   trait LiquibaseAction {
 

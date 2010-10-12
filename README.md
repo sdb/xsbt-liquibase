@@ -50,3 +50,7 @@ The following actions are available:
 * `liquibase-update`
 
   Applies un-run changes to the database.
+
+* `liquibase-drop [schemas]...`
+
+  Drops database objects owned by the current user.
