@@ -75,6 +75,10 @@ The following actions are available:
 
   Checks the changelog for errors.
 
+* `liquibase-clear-checksums`
+
+  Removes current checksums from database.
+
 #Questions and Feedback#
 
 Feel free to send me a message [@sdeboey](http://twitter.com/sdeboey) or check out my [Contact](http://stefandeboey.be/contact) page for other ways to get in touch.
