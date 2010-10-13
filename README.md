@@ -21,20 +21,20 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
           val liquiBase = "com.github.sdb" % "liquibase-sbt-plugin" % "0.0.1"
         }
 
-2. Mixin the LiquiBasePlugin trait in your project file, e.g. `project/build/TestProject.scala`
+2. Mixin the LiquibasePlugin trait in your project file, e.g. `project/build/TestProject.scala`
 
         import sbt._
-        import com.github.sdb.sbt.liquibase.LiquiBasePlugin
+        import com.github.sdb.sbt.liquibase.LiquibasePlugin
 
         class TestProject(info: ProjectInfo) extends DefaultProject(info)
-          with LiquiBasePlugin {
+          with LiquibasePlugin {
           ...
         }
 
 3. Configure
 
         class TestProject(info: ProjectInfo) extends DefaultProject(info)
-          with LiquiBasePlugin {
+          with LiquibasePlugin {
 
           // declare the required database driver as a runtime dependency
           val h2 = "com.h2database" % "h2" % "1.2.143" % "runtime"
@@ -70,6 +70,10 @@ The following actions are available:
 * `liquibase-rollback TAG`
 
   Rolls back the database to the state it was in when the tag was applied.
+
+* `liquibase-validate`
+
+  Checks the changelog for errors.
 
 #Questions and Feedback#
 

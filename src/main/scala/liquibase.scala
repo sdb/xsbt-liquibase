@@ -10,7 +10,7 @@ import _root_.liquibase.database.Database
 import _root_.liquibase.exception._
 
 
-trait LiquiBasePlugin extends Project with ClasspathProject {
+trait LiquibasePlugin extends Project with ClasspathProject {
 
   def changeLogFile: Path
   def url: String
@@ -90,7 +90,7 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
 
 
   abstract class LiquibaseAction(action: Liquibase => Option[String]) {
-    lazy val liquibase = LiquiBasePlugin.this.liquibase
+    lazy val liquibase = LiquibasePlugin.this.liquibase
     def run: Option[String] = exec({ action(liquibase) })
     def exec(f: => Option[String]) = f
   }
