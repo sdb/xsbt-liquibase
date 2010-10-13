@@ -42,16 +42,16 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
 
   lazy val liquibaseUpdate = liquibaseUpdateAction
   def liquibaseUpdateAction = task {
-    new LiquibaseAction({ liquibase update contexts; None }) with Cleanup
+    new LiquibaseAction({lb => lb update contexts; None }) with Cleanup
   } describedAs  "Applies un-run changes to the database."
 
 
   lazy val liquibaseDrop = liquibaseDropAction
   def liquibaseDropAction = taskWithArgs { args => {
-    new LiquibaseAction({
+    new LiquibaseAction({ lb =>
       args.size match {
-        case 0 => liquibase dropAll
-        case _ => liquibase dropAll (args:_*)
+        case 0 => lb dropAll
+        case _ => lb dropAll (args:_*)
       }; None
     }) with Cleanup }
   } describedAs  "Drops database objects owned by the current user."
@@ -59,9 +59,9 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
 
   lazy val liquibaseTag = liquibaseTagAction
   def liquibaseTagAction = taskWithArgs { args => {
-    new LiquibaseAction({
+    new LiquibaseAction({ lb =>
       args.size match {
-        case 1 => liquibase tag args(0); None
+        case 1 => lb tag args(0); None
         case _ => Some("The tag must be specified.")
       }
     }) with Cleanup }
@@ -70,9 +70,9 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
 
   lazy val liquibaseRollback = liquibaseRollbackAction
   def liquibaseRollbackAction = taskWithArgs { args => {
-    new LiquibaseAction({
+    new LiquibaseAction({ lb =>
       args.size match {
-        case 1 => liquibase.rollback(args(0), contexts); None
+        case 1 => lb rollback(args(0), contexts); None
         case _ => Some("The tag must be specified.")
       }
     }) with Cleanup }
@@ -83,9 +83,9 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     task { args => task { t(args) } }
 
 
-  abstract class LiquibaseAction(action: => Option[String]) {
+  abstract class LiquibaseAction(action: Liquibase => Option[String]) {
     lazy val liquibase = LiquiBasePlugin.this.liquibase
-    def run: Option[String] = exec({ action })
+    def run: Option[String] = exec({ action(liquibase) })
     def exec(f: => Option[String]) = f
   }
 
