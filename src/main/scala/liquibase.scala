@@ -19,25 +19,6 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
   def contexts: String = null
   def defaultSchemaName: String = null
 
-  lazy val liquibaseUpdate = liquibaseUpdateAction
-  def liquibaseUpdateAction = task {
-    new LiquibaseAction with Cleanup {
-      def action { liquibase update contexts }
-    }.run
-    None
-  } describedAs  "Applies un-run changes to the database."
-
-  lazy val liquibaseDrop = liquibaseDropAction
-  def liquibaseDropAction = task { args => task {
-    new LiquibaseAction with Cleanup {
-      def action {
-        val schemas = args.toList.toArray
-        if (schemas.size > 0) liquibase dropAll (schemas:_*)
-        else liquibase dropAll
-      }
-    }.run
-    None }
-  } describedAs  "Drops database objects owned by the current user."
 
   def database = CommandLineUtils.createDatabaseObject(
     ClasspathUtilities.toLoader(fullClasspath(Runtime)),
@@ -54,18 +35,52 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     database)
 
 
+  lazy val liquibaseUpdate = liquibaseUpdateAction
+  def liquibaseUpdateAction = task {
+    new LiquibaseAction with Cleanup {
+      def action = { liquibase update contexts; None }
+    }.run
+  } describedAs  "Applies un-run changes to the database."
+
+  lazy val liquibaseDrop = liquibaseDropAction
+  def liquibaseDropAction = taskWithArgs { args => {
+    new LiquibaseAction with Cleanup {
+      def action = {
+        args.size match {
+          case 0 => liquibase dropAll
+          case _ => liquibase dropAll (args:_*)
+        }; None
+      }
+    }.run }
+  } describedAs  "Drops database objects owned by the current user."
+
+  lazy val liquibaseTag = liquibaseTagAction
+  def liquibaseTagAction = taskWithArgs { args => {
+    args.size match {
+      case 1 => {
+        new LiquibaseAction with Cleanup {
+          def action = { liquibase tag args(0); None }
+        }.run }
+      case _ => Some("The tag must be specified.")
+    }}
+  } describedAs  "Tags the current database state for future rollback."
+    
+  def taskWithArgs(t: (Array[String]) => Option[String]) =
+    task { args => task{ t(args) }}
+
+
   trait LiquibaseAction {
     lazy val liquibase = LiquiBasePlugin.this.liquibase
-    def action
-    def run = exec({ () => action})
-    def exec(f: () => Unit) = f()
+    def action: Option[String]
+    def run = exec({() => action})
+    def exec(f: () => Option[String]) = f()
   }
 
   trait Cleanup extends LiquibaseAction {
 
-    override def exec(f: () => Unit) {
+    override def exec(f: () => Option[String]): Option[String] = {
       try {
-        f()
+        return f()
       } finally {
         cleanup
       }

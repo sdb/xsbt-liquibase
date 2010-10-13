@@ -51,6 +51,10 @@ The following actions are available:
 
   Applies un-run changes to the database.
 
-* `liquibase-drop [schemas]...`
+* `liquibase-drop [SCHEMA]...`
 
   Drops database objects owned by the current user.
+
+* `liquibase-tag TAG`
+
+  Tags the current database state for future rollback.
