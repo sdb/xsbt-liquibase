@@ -15,6 +15,9 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
   def changeLogFile: Path
   def url: String
   def driver: String
+
+  def username: String = null
+  def password: String = null
   
   def contexts: String = null
   def defaultSchemaName: String = null
@@ -23,8 +26,8 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
   def database = CommandLineUtils.createDatabaseObject(
     ClasspathUtilities.toLoader(fullClasspath(Runtime)),
     url,
-    null,
-    null,
+    username,
+    password,
     driver,
     defaultSchemaName,
     null)

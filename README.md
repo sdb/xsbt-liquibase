@@ -26,22 +26,30 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
         import sbt._
         import com.github.sdb.sbt.liquibase.LiquiBasePlugin
 
-        class TestProject(info: ProjectInfo) extends DefaultProject(info) with LiquiBasePlugin {
+        class TestProject(info: ProjectInfo) extends DefaultProject(info)
+          with LiquiBasePlugin {
           ...
         }
 
 3. Configure
 
-        class TestProject(info: ProjectInfo) extends DefaultProject(info) with LiquiBasePlugin {
+        class TestProject(info: ProjectInfo) extends DefaultProject(info)
+          with LiquiBasePlugin {
 
           // declare the required database driver as a runtime dependency
           val h2 = "com.h2database" % "h2" % "1.2.143" % "runtime"
 
           // provide the parameters for running liquibase commands
-          def changeLogFile = "config" / "db-changelog.xml"
-          def driver = "org.h2.Driver"
-          def url = "jdbc:h2:mem:"
+          lazy val changeLogFile = "config" / "db-changelog.xml"
+          lazy val driver = "org.h2.Driver"
+          lazy val url = "jdbc:h2:mem:"
+          
+          // provide username and password for database access
+          override lazy val username = "sa"
+          override lazy val password = ""
         }
+
+  Note that this a very basic way to configure the plugin. Take a look at this gist for a more realistic example.
 
 #Usage#
 
@@ -62,3 +70,4 @@ The following actions are available:
 * `liquibase-rollback TAG`
 
   Rolls back the database to the state it was in when the tag was applied.
+
