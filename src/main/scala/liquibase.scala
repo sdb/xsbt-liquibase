@@ -42,6 +42,7 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     }.run
   } describedAs  "Applies un-run changes to the database."
 
+
   lazy val liquibaseDrop = liquibaseDropAction
   def liquibaseDropAction = taskWithArgs { args => {
     new LiquibaseAction with Cleanup {
@@ -54,6 +55,7 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     }.run }
   } describedAs  "Drops database objects owned by the current user."
 
+
   lazy val liquibaseTag = liquibaseTagAction
   def liquibaseTagAction = taskWithArgs { args => {
     args.size match {
@@ -64,6 +66,19 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
       case _ => Some("The tag must be specified.")
     }}
   } describedAs  "Tags the current database state for future rollback."
+
+
+  lazy val liquibaseRollback = liquibaseRollbackAction
+  def liquibaseRollbackAction = taskWithArgs { args => {
+    args.size match {
+      case 1 => {
+        new LiquibaseAction with Cleanup {
+          def action = { liquibase.rollback(args(0), contexts); None }
+        }.run }
+      case _ => Some("The tag must be specified.")
+    }}
+  } describedAs  "Rolls back the database to the state it was in when the tag was applied."
+
     
   def taskWithArgs(t: (Array[String]) => Option[String]) =
     task { args => task{ t(args) }}

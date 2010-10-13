@@ -58,3 +58,7 @@ The following actions are available:
 * `liquibase-tag TAG`
 
   Tags the current database state for future rollback.
+
+* `liquibase-rollback TAG`
+
+  Rolls back the database to the state it was in when the tag was applied.
