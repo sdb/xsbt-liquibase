@@ -49,7 +49,7 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
           override lazy val password = ""
         }
 
-  Note that this a very basic way to configure the plugin. Take a look at this gist for a more realistic example.
+  Note that this a very basic way to configure the plugin. Take a look at this [gist](http://gist.github.com/624275) for a more realistic example.
 
 #Usage#
 

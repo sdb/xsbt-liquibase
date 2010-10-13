@@ -38,85 +38,71 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     database)
 
 
+  private implicit def action2Result(a: LiquibaseAction) = a.run
+
   lazy val liquibaseUpdate = liquibaseUpdateAction
   def liquibaseUpdateAction = task {
-    new LiquibaseAction with Cleanup {
-      def action = { liquibase update contexts; None }
-    }.run
+    new LiquibaseAction({ liquibase update contexts; None }) with Cleanup
   } describedAs  "Applies un-run changes to the database."
 
 
   lazy val liquibaseDrop = liquibaseDropAction
   def liquibaseDropAction = taskWithArgs { args => {
-    new LiquibaseAction with Cleanup {
-      def action = {
-        args.size match {
-          case 0 => liquibase dropAll
-          case _ => liquibase dropAll (args:_*)
-        }; None
-      }
-    }.run }
+    new LiquibaseAction({
+      args.size match {
+        case 0 => liquibase dropAll
+        case _ => liquibase dropAll (args:_*)
+      }; None
+    }) with Cleanup }
   } describedAs  "Drops database objects owned by the current user."
 
 
   lazy val liquibaseTag = liquibaseTagAction
   def liquibaseTagAction = taskWithArgs { args => {
-    args.size match {
-      case 1 => {
-        new LiquibaseAction with Cleanup {
-          def action = { liquibase tag args(0); None }
-        }.run }
-      case _ => Some("The tag must be specified.")
-    }}
+    new LiquibaseAction({
+      args.size match {
+        case 1 => liquibase tag args(0); None
+        case _ => Some("The tag must be specified.")
+      }
+    }) with Cleanup }
   } describedAs  "Tags the current database state for future rollback."
 
 
   lazy val liquibaseRollback = liquibaseRollbackAction
   def liquibaseRollbackAction = taskWithArgs { args => {
-    args.size match {
-      case 1 => {
-        new LiquibaseAction with Cleanup {
-          def action = { liquibase.rollback(args(0), contexts); None }
-        }.run }
-      case _ => Some("The tag must be specified.")
-    }}
+    new LiquibaseAction({
+      args.size match {
+        case 1 => liquibase.rollback(args(0), contexts); None
+        case _ => Some("The tag must be specified.")
+      }
+    }) with Cleanup }
   } describedAs  "Rolls back the database to the state it was in when the tag was applied."
 
     
   def taskWithArgs(t: (Array[String]) => Option[String]) =
-    task { args => task{ t(args) }}
+    task { args => task { t(args) } }
 
 
-  trait LiquibaseAction {
+  abstract class LiquibaseAction(action: => Option[String]) {
     lazy val liquibase = LiquiBasePlugin.this.liquibase
-    def action: Option[String]
-    def run = exec({() => action})
-    def exec(f: () => Option[String]) = f()
+    def run: Option[String] = exec({ action })
+    def exec(f: => Option[String]) = f
   }
 
   trait Cleanup extends LiquibaseAction {
 
-    override def exec(f: () => Option[String]): Option[String] = {
-      try {
-        return f()
-      } finally {
-        cleanup
-      }
+    override def exec(f: => Option[String]): Option[String] = {
+      try { return f } finally { cleanup }
     }
 
     def cleanup {
       if (liquibase != null)
-        try {
-          liquibase.forceReleaseLocks
-        } catch {
+        try { liquibase.forceReleaseLocks } catch {
           case e: LiquibaseException => log trace e
         }
       val db = liquibase.getDatabase
       if (db != null)
-        try {
-          db.rollback
-          db.close
-        } catch {
+        try { db.rollback; db.close } catch {
           case e: DatabaseException => log trace e
         }
     }
