@@ -71,3 +71,6 @@ The following actions are available:
 
   Rolls back the database to the state it was in when the tag was applied.
 
+#Questions and Feedback#
+
+Feel free to send me a message [@sdeboey](http://twitter.com/sdeboey) or check out my [Contact](http://stefandeboey.be/contact) page for other ways to get in touch.
