@@ -78,6 +78,12 @@ trait LiquiBasePlugin extends Project with ClasspathProject {
     }) with Cleanup }
   } describedAs  "Rolls back the database to the state it was in when the tag was applied."
 
+
+  lazy val liquibaseValidate = liquibaseValidateAction
+  def liquibaseValidateAction = task {
+    new LiquibaseAction({ lb => lb validate; None }) with Cleanup
+  } describedAs  "Checks the changelog for errors."
+
     
   def taskWithArgs(t: (Array[String]) => Option[String]) =
     task { args => task { t(args) } }
