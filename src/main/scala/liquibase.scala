@@ -14,41 +14,41 @@ import _root_.liquibase.logging.LogFactory
 
 trait LiquibasePlugin extends Project with ClasspathProject {
 
-  def changeLogFile: Path
-  def url: String
-  def driver: String
+  def liquibaseChangeLogFile: Path
+  def liquibaseUrl: String
+  def liquibaseDriver: String
 
-  def username: String = null
-  def password: String = null
+  def liquibaseUsername: String = null
+  def liquibasePassword: String = null
   
-  def contexts: String = null
-  def defaultSchemaName: String = null
+  def liquibaseContexts: String = null
+  def liquibaseDefaultSchemaName: String = null
   
 
   // pass the project logger to receive logging from Liquibase
   SBTLogger.logger = Some(log)
 
 
-  def database = CommandLineUtils.createDatabaseObject(
+  def liquibaseDatabase = CommandLineUtils.createDatabaseObject(
     ClasspathUtilities.toLoader(fullClasspath(Runtime)),
-    url,
-    username,
-    password,
-    driver,
-    defaultSchemaName,
+    liquibaseUrl,
+    liquibaseUsername,
+    liquibasePassword,
+    liquibaseDriver,
+    liquibaseDefaultSchemaName,
     null)
 
   def liquibase = new Liquibase(
-    changeLogFile.absolutePath,
+    liquibaseChangeLogFile.absolutePath,
     new FileSystemResourceAccessor,
-    database)
+    liquibaseDatabase)
 
 
   private implicit def action2Result(a: LiquibaseAction) = a.run
 
   lazy val liquibaseUpdate = liquibaseUpdateAction
   def liquibaseUpdateAction = task {
-    new LiquibaseAction({lb => lb update contexts; None }) with Cleanup
+    new LiquibaseAction({lb => lb update liquibaseContexts; None }) with Cleanup
   } describedAs  "Applies un-run changes to the database."
 
 
@@ -78,7 +78,7 @@ trait LiquibasePlugin extends Project with ClasspathProject {
   def liquibaseRollbackAction = taskWithArgs { args => {
     new LiquibaseAction({ lb =>
       args.size match {
-        case 1 => lb rollback(args(0), contexts); None
+        case 1 => lb rollback(args(0), liquibaseContexts); None
         case _ => Some("The tag must be specified.")
       }
     }) with Cleanup }

@@ -40,13 +40,13 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
           val h2 = "com.h2database" % "h2" % "1.2.143" % "runtime"
 
           // provide the parameters for running liquibase commands
-          lazy val changeLogFile = "config" / "db-changelog.xml"
-          lazy val driver = "org.h2.Driver"
-          lazy val url = "jdbc:h2:mem:"
+          lazy val liquibaseChangeLogFile = "config" / "db-changelog.xml"
+          lazy val liquibaseDriver = "org.h2.Driver"
+          lazy val liquibaseUrl = "jdbc:h2:mem:"
           
           // provide username and password for database access
-          override lazy val username = "sa"
-          override lazy val password = ""
+          override lazy val liquibaseUsername = "sa"
+          override lazy val liquibasePassword = ""
         }
 
   Note that this a very basic way to configure the plugin. Take a look at this [gist](http://gist.github.com/624275) for a more realistic example.
