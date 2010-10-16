@@ -75,6 +75,10 @@ The following actions are available:
 
   Rolls back the database to the state it was in when the tag was applied.
 
+* `liquibase-rollback-count COUNT`
+
+  Rolls back the last number of change sets.
+
 * `liquibase-validate`
 
   Checks the changelog for errors.

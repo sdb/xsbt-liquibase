@@ -105,6 +105,20 @@ trait LiquibasePlugin extends Project with ClasspathProject {
   } describedAs  "Rolls back the database to the state it was in when the tag was applied."
 
 
+  lazy val liquibaseRollbackCount = liquibaseRollbackCountAction
+  def liquibaseRollbackCountAction = taskWithArgs { args => {
+    new LiquibaseAction({ lb =>
+      args.size match {
+        case 1 => args(0) match {
+          case Int(x) => lb rollback(x, liquibaseContexts); None
+          case _ => Some("Number of change sets must be an integer value.")
+        }
+        case _ => Some("Number of change sets must be specified.")
+      }
+    }) with Cleanup }
+  } describedAs  "Rolls back the last number of change sets."
+
+
   lazy val liquibaseClearChecksums = liquibaseClearChecksumsAction
   def liquibaseClearChecksumsAction = task {
     new LiquibaseAction({ lb => lb clearCheckSums; None }) with Cleanup
