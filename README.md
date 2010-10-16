@@ -59,6 +59,10 @@ The following actions are available:
 
   Applies un-run changes to the database.
 
+* `liquibase-update-count COUNT`
+
+  Applies the next number of change sets.
+
 * `liquibase-drop [SCHEMA]...`
 
   Drops database objects owned by the current user.
@@ -79,6 +83,3 @@ The following actions are available:
 
   Removes current checksums from database.
 
-#Questions and Feedback#
-
-Feel free to send me a message [@sdeboey](http://twitter.com/sdeboey) or check out my [Contact](http://stefandeboey.be/contact) page for other ways to get in touch.

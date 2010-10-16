@@ -7,9 +7,7 @@ import _root_.liquibase.integration.commandline.CommandLineUtils
 import _root_.liquibase.resource.FileSystemResourceAccessor
 import _root_.liquibase.Liquibase
 import _root_.liquibase.servicelocator.ServiceLocator
-import _root_.liquibase.database.Database
 import _root_.liquibase.exception._
-import _root_.liquibase.logging.LogFactory
 
 
 trait LiquibasePlugin extends Project with ClasspathProject {
@@ -46,10 +44,32 @@ trait LiquibasePlugin extends Project with ClasspathProject {
 
   private implicit def action2Result(a: LiquibaseAction) = a.run
 
+  object Int {
+    def unapply(s: String): Option[Int] = try {
+      Some(s.toInt)
+    } catch {
+      case _ : java.lang.NumberFormatException => None
+    }
+  }
+
   lazy val liquibaseUpdate = liquibaseUpdateAction
   def liquibaseUpdateAction = task {
     new LiquibaseAction({lb => lb update liquibaseContexts; None }) with Cleanup
   } describedAs  "Applies un-run changes to the database."
+
+
+  lazy val liquibaseUpdateCount = liquibaseUpdateCountAction
+  def liquibaseUpdateCountAction = taskWithArgs { args => {
+    new LiquibaseAction({ lb =>
+      args.size match {
+        case 1 => args(0) match {
+          case Int(x) => lb update(x, liquibaseContexts); None
+          case _ => Some("Number of change sets must be an integer value.")
+        }
+        case _ => Some("Number of change sets must be specified.")
+      }
+    }) with Cleanup }
+  } describedAs  "Applies the next number of change sets."
 
 
   lazy val liquibaseDrop = liquibaseDropAction
