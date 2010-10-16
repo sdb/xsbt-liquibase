@@ -79,6 +79,10 @@ The following actions are available:
 
   Rolls back the last number of change sets.
 
+* `liquibase-rollback-date DATE`
+
+  Rolls back the database to the state it was in at the given date/time. The format of the date must match that of 'liquibaseDateFormat'.
+
 * `liquibase-validate`
 
   Checks the changelog for errors.

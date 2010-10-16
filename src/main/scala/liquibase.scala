@@ -9,6 +9,8 @@ import _root_.liquibase.Liquibase
 import _root_.liquibase.servicelocator.ServiceLocator
 import _root_.liquibase.exception._
 
+import java.text.DateFormat
+
 
 trait LiquibasePlugin extends Project with ClasspathProject {
 
@@ -21,6 +23,8 @@ trait LiquibasePlugin extends Project with ClasspathProject {
   
   def liquibaseContexts: String = null
   def liquibaseDefaultSchemaName: String = null
+
+  def liquibaseDateFormat: DateFormat = DateFormat.getDateInstance()
   
 
   // pass the project logger to receive logging from Liquibase
@@ -49,6 +53,16 @@ trait LiquibasePlugin extends Project with ClasspathProject {
       Some(s.toInt)
     } catch {
       case _ : java.lang.NumberFormatException => None
+    }
+  }
+
+  object Date {
+    import java.text.{DateFormat, ParseException}
+    import java.util.Date
+    def unapply(s: String): Option[Date] = try {
+      Some(liquibaseDateFormat.parse(s))
+    } catch {
+      case _ : ParseException => None
     }
   }
 
@@ -117,6 +131,20 @@ trait LiquibasePlugin extends Project with ClasspathProject {
       }
     }) with Cleanup }
   } describedAs  "Rolls back the last number of change sets."
+
+
+  lazy val liquibaseRollbackDate = liquibaseRollbackDateAction
+  def liquibaseRollbackDateAction = taskWithArgs { args => {
+    new LiquibaseAction({ lb =>
+      args.size match {
+        case 1 => args(0) match {
+          case Date(x) => lb rollback(x, liquibaseContexts); None
+          case _ => Some("The format of the date must match that of 'liquibaseDateFormat'.")
+        }
+        case _ => Some("Date must be specified.")
+      }
+    }) with Cleanup }
+  } describedAs  "Rolls back the database to the state it was in at the given date/time."
 
 
   lazy val liquibaseClearChecksums = liquibaseClearChecksumsAction
