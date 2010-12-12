@@ -8,6 +8,7 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
 
     git clone git://github.com/sdb/liquibase-sbt-plugin.git
     cd liquibase-sbt-plugin
+    sbt update
     sbt publish-local
     
 
