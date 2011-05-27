@@ -2,16 +2,6 @@ The liquibase-sbt-plugin is a plugin for the [Simple Build Tool](http://code.goo
 
 [Liquibase](http://www.liquibase.org/) is a database-independent library for tracking, managing and applying database changes.
 
-#Install#
-
-The liquibase-sbt-plugin is not (yet) available in a public repository, so you have to build and install it yourself.
-
-    git clone git://github.com/sdb/liquibase-sbt-plugin.git
-    cd liquibase-sbt-plugin
-    sbt update
-    sbt publish-local
-    
-
 #Setup#
 
 1. Define a dependency on the liquibase-sbt-plugin in your plugin definition file, `project/plugins/Plugins.scala`
@@ -19,7 +9,8 @@ The liquibase-sbt-plugin is not (yet) available in a public repository, so you h
         import sbt._
 
         class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
-          val liquiBase = "com.github.sdb" % "liquibase-sbt-plugin" % "0.0.1"
+          val liquibaseSbtSnapshots = "Liquibase SBT Snapshots Repository" at "http://sdb.github.com/maven/snapshots"
+          val liquibase = "com.github.sdb" % "liquibase-sbt-plugin" % "0.0.1-SNAPSHOT"
         }
 
 2. Mixin the LiquibasePlugin trait in your project file, e.g. `project/build/TestProject.scala`
