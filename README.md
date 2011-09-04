@@ -1,5 +1,7 @@
 The liquibase-sbt-plugin is a plugin for the [Simple Build Tool](http://code.google.com/p/simple-build-tool/) (SBT) for running LiquiBase commands.
 
+This version only supports SBT 0.7.x.
+
 [Liquibase](http://www.liquibase.org/) is a database-independent library for tracking, managing and applying database changes.
 
 #Setup#
