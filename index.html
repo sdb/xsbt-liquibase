@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>xsbt-liquibase by sdb</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>xsbt-liquibase</h1>
+        <p>A plugin for the Simple Build Tool (SBT) for running LiquiBase</p>
+        <p class="view"><a href="https://github.com/sdb/xsbt-liquibase">View the Project on GitHub <small>sdb/xsbt-liquibase</small></a></p>
+        <ul>
+          <li><a href="https://github.com/sdb/xsbt-liquibase/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sdb/xsbt-liquibase/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sdb/xsbt-liquibase">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>The liquibase-sbt-plugin is a plugin for the <a href="http://code.google.com/p/simple-build-tool/">Simple Build Tool</a> (SBT) for running LiquiBase commands.</p>
+
+<p>This version only supports SBT 0.7.x.</p>
+
+<p><a href="http://www.liquibase.org/">Liquibase</a> is a database-independent library for tracking, managing and applying database changes.</p>
+
+<h1>Setup</h1>
+
+<ol>
+<li>
+<p>Define a dependency on the liquibase-sbt-plugin in your plugin definition file, <code>project/plugins/Plugins.scala</code></p>
+
+<pre><code>import sbt._
+
+class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
+  val liquibaseSbtSnapshots = "Liquibase SBT Snapshots Repository" at "http://sdb.github.com/maven/snapshots"
+  val liquibase = "com.github.sdb" % "liquibase-sbt-plugin" % "0.0.1-SNAPSHOT"
+}
+</code></pre>
+</li>
+<li>
+<p>Mixin the LiquibasePlugin trait in your project file, e.g. <code>project/build/TestProject.scala</code></p>
+
+<pre><code>import sbt._
+import com.github.sdb.sbt.liquibase.LiquibasePlugin
+
+class TestProject(info: ProjectInfo) extends DefaultProject(info)
+  with LiquibasePlugin {
+  ...
+}
+</code></pre>
+</li>
+<li>
+<p>Configure</p>
+
+<pre><code>class TestProject(info: ProjectInfo) extends DefaultProject(info)
+  with LiquibasePlugin {
+
+  // declare the required database driver as a runtime dependency
+  val h2 = "com.h2database" % "h2" % "1.2.143" % "runtime"
+
+  // provide the parameters for running liquibase commands
+  lazy val liquibaseChangeLogFile = "config" / "db-changelog.xml"
+  lazy val liquibaseDriver = "org.h2.Driver"
+  lazy val liquibaseUrl = "jdbc:h2:mem:"
+
+  // provide username and password for database access
+  override lazy val liquibaseUsername = "sa"
+  override lazy val liquibasePassword = ""
+}
+</code></pre>
+
+<p>Note that this a very basic way to configure the plugin. Take a look at this <a href="http://gist.github.com/624275">gist</a> for a more realistic example.</p>
+</li>
+</ol><h1>Usage</h1>
+
+<p>The following actions are available:</p>
+
+<ul>
+<li>
+<p><code>liquibase-update</code></p>
+
+<p>Applies un-run changes to the database.</p>
+</li>
+<li>
+<p><code>liquibase-update-count COUNT</code></p>
+
+<p>Applies the next number of change sets.</p>
+</li>
+<li>
+<p><code>liquibase-drop [SCHEMA]...</code></p>
+
+<p>Drops database objects owned by the current user.</p>
+</li>
+<li>
+<p><code>liquibase-tag TAG</code></p>
+
+<p>Tags the current database state for future rollback.</p>
+</li>
+<li>
+<p><code>liquibase-rollback TAG</code></p>
+
+<p>Rolls back the database to the state it was in when the tag was applied.</p>
+</li>
+<li>
+<p><code>liquibase-rollback-count COUNT</code></p>
+
+<p>Rolls back the last number of change sets.</p>
+</li>
+<li>
+<p><code>liquibase-rollback-date DATE</code></p>
+
+<p>Rolls back the database to the state it was in at the given date/time. The format of the date must match that of 'liquibaseDateFormat'.</p>
+</li>
+<li>
+<p><code>liquibase-validate</code></p>
+
+<p>Checks the changelog for errors.</p>
+</li>
+<li>
+<p><code>liquibase-clear-checksums</code></p>
+
+<p>Removes current checksums from database.</p>
+</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/sdb">sdb</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-31137859-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
